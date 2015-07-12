@@ -1,11 +1,11 @@
-function tto=qtt(A,varargin)
+ï»¿function tto=qtt(A,varargin)
 % FUNCTION  tto=QTT(A,scale,cut_value,exmethod)
-% ´øÑÓÍØµÄ¶àÎ¬Êı×é qtt_svd Ëã·¨,AÊÇÒ»¸ö¶àÎ¬Êı×é, Ö§³ÖÏòÁ¿¡¢¾ØÕóµÈ
+% å¸¦å»¶æ‹“çš„å¤šç»´æ•°ç»„ qtt_svd ç®—æ³•,Aæ˜¯ä¸€ä¸ªå¤šç»´æ•°ç»„, æ”¯æŒå‘é‡ã€çŸ©é˜µç­‰
 %
-% ÊäÈë²ÎÊı£º
-% A     :ĞèÒª´¦ÀíµÄ¶àÎ¬Êı×é£¬Êı×éÎ¬ÊıÎªl
+% è¾“å…¥å‚æ•°ï¼š
+% A     :éœ€è¦å¤„ç†çš„å¤šç»´æ•°ç»„ï¼Œæ•°ç»„ç»´æ•°ä¸ºl
 %
-% scale : QTTºË×ÓÕÅÁ¿µÄ´óĞ¡(Èç¹û±ÈÔ­Êı×é»á×Ô¶¯ÑÓÍØ)
+% scale : QTTæ ¸å­å¼ é‡çš„å¤§å°(å¦‚æœæ¯”åŸæ•°ç»„ä¼šè‡ªåŠ¨å»¶æ‹“)
 %     ----------------------------
 %         1      2   ...    l
 %     1   n^1_1  .   ...   n^1_l
@@ -14,23 +14,23 @@ function tto=qtt(A,varargin)
 %     .   ...
 %     d   n^d_1  .   ...   n^d_l
 %     ----------------------------
-%     ¼òµ¥µã¿ÉÖ±½ÓÁîscale=q,Ôò³ıÏÂµÚÒ»¸öºË£¬ÆäËûºËµÄ×ÓÕÅÁ¿´óĞ¡¶¼ÊÇq*q*q...
+%     ç®€å•ç‚¹å¯ç›´æ¥ä»¤scale=q,åˆ™é™¤ä¸‹ç¬¬ä¸€ä¸ªæ ¸ï¼Œå…¶ä»–æ ¸çš„å­å¼ é‡å¤§å°éƒ½æ˜¯q*q*q...
 %
-% cut_value:½Ø¶ÏÖÈ/½Ø¶Ï·¶Êı
-%       Èç¹û°´ÖÈ½Ø¶Ï£¬Ôò cut_value=r,rµÄ³¤¶ÈµÈÓÚd+1
-%       Èç¹û°´·¶Êı½Ø¶Ï£¬Ôòcut_value=epss
+% cut_value:æˆªæ–­ç§©/æˆªæ–­èŒƒæ•°
+%       å¦‚æœæŒ‰ç§©æˆªæ–­ï¼Œåˆ™ cut_value=r,rçš„é•¿åº¦ç­‰äºd+1
+%       å¦‚æœæŒ‰èŒƒæ•°æˆªæ–­ï¼Œåˆ™cut_value=epss
 %
-% exmethod:ÑÓÍØ·½·¨
-%       Ä¿Ç°Ö»Ö§³Ö¶Ô³ÆÑÓÍØ£¬¼°exmethod='sym'; 
+% exmethod:å»¶æ‹“æ–¹æ³•
+%       ç›®å‰åªæ”¯æŒå¯¹ç§°å»¶æ‹“ï¼ŒåŠexmethod='sym'; 
 %
-% Êä³ö²ÎÊı£ºº¯ÊıÊä³öÒ»¸ö½á¹¹Ìå£¬¼ÇÂ¼ËùÓĞÏà¹ØĞÅÏ¢,²»ÅÅ³ıºóĞø»á×ª»¯³É×¨ÃÅµÄÒ»¸öÀà
-%  tto.core: ¼ÇÂ¼ËùÓĞµÄQTTºË
+% è¾“å‡ºå‚æ•°ï¼šå‡½æ•°è¾“å‡ºä¸€ä¸ªç»“æ„ä½“ï¼Œè®°å½•æ‰€æœ‰ç›¸å…³ä¿¡æ¯,ä¸æ’é™¤åç»­ä¼šè½¬åŒ–æˆä¸“é—¨çš„ä¸€ä¸ªç±»
+%  tto.core: è®°å½•æ‰€æœ‰çš„QTTæ ¸
 %
 %
 %
 %   example:
 %         A=mat2gray(imread(I));
-%         t=qtt(A);%ÆäËû²ÎÊı¶¼È±Ê¡
+%         t=qtt(A);%å…¶ä»–å‚æ•°éƒ½ç¼ºçœ
 %
 %  @J.Song @2015.07.12 @1.1
 %
@@ -50,7 +50,7 @@ elseif nargin==3
     exmethod='sym';
 end
 
-% »ñÈ¡Êı×é»ù±¾ĞÅÏ¢
+% è·å–æ•°ç»„åŸºæœ¬ä¿¡æ¯
 ndim=ndims(A);
 oldsize=size(A);
 if isvector(A)
@@ -63,7 +63,7 @@ if any(oldsize==1)
     error('Please check the array.');
 end
 
-% ´¦Àí³ß¶ÈÎÊÌâ
+% å¤„ç†å°ºåº¦é—®é¢˜
 if length(scale)<=1
     if isempty(scale)
         q=2;
@@ -82,7 +82,7 @@ else
 end
 
 
-% ´¦Àí½Ø¶ÏÎÊÌâ
+% å¤„ç†æˆªæ–­é—®é¢˜
 if (length(cut_value)==1)&&(cut_value<1)
     cut_method='epss';
     epss=cut_value;
@@ -101,7 +101,7 @@ end
     
 
 
-%% ÑÓÍØ
+%% å»¶æ‹“
 newsize=prod(scale);
 extension=0;
 if ~isequal(oldsize,newsize)
@@ -123,36 +123,36 @@ if ~isequal(oldsize,newsize)
 end
     
     
-%% ¶ÔÊı×éÔ¤´¦Àí
+%% å¯¹æ•°ç»„é¢„å¤„ç†
 scale=scale(end:-1:1,:);
-A = reshape(A, (scale(:))'); % ×ª»¯Îªndim*d µÄÕÅÁ¿
+A = reshape(A, (scale(:))'); % è½¬åŒ–ä¸ºndim*d çš„å¼ é‡
 if ndim>1 
 prm=1:ndim*d; prm=reshape(prm,[d,ndim]); prm=prm';
 prm=prm(:); % Transposed permutation
 A=permute(A,prm);
-n=prod(scale,2); %ĞÂµÄÕÅÁ¿´óĞ¡,ÁĞÏòÁ¿
+n=prod(scale,2); %æ–°çš„å¼ é‡å¤§å°,åˆ—å‘é‡
 A=reshape(A,n');
 end
      
 
 
-%% SVDÕÛµş
+%% SVDæŠ˜å 
 
-% tt_svd Ëã·¨, Ïà¶ÔÓÚÔ­°æµÄ×÷ÁËÒ»Ğ©ĞŞÕı
-% A ÊÇ´ı·Ö½âµÄÕÅÁ¿
-% n ÊÇÕÅÁ¿µÄÄ£Êı
-% core ÊÇËùÓĞµÄTTºË, ´æ´¢Îªµ¥¸öÁĞÏòÁ¿£¬Í¨¹ıpsÀ´Ë÷Òı
-% ps Ë÷ÒıµÚk¸öTTºËÓÃµÄ
+% tt_svd ç®—æ³•, ç›¸å¯¹äºåŸç‰ˆçš„ä½œäº†ä¸€äº›ä¿®æ­£
+% A æ˜¯å¾…åˆ†è§£çš„å¼ é‡
+% n æ˜¯å¼ é‡çš„æ¨¡æ•°
+% core æ˜¯æ‰€æœ‰çš„TTæ ¸, å­˜å‚¨ä¸ºå•ä¸ªåˆ—å‘é‡ï¼Œé€šè¿‡psæ¥ç´¢å¼•
+% ps ç´¢å¼•ç¬¬kä¸ªTTæ ¸ç”¨çš„
 
 d = numel(n);
 r = ones(d+1,1);
 core=[];
 c=A;clear A
-%%==============¡¾ modification¡¿======================================
+%%==============ã€ modificationã€‘======================================
 
 for i=1:d-1
     % m=n(i)*r(i); c=reshape(c,[m,numel(c)/m]);
-    % ===============¡¾part one¡¿=====================
+    % ===============ã€part oneã€‘=====================
     m=n(i)*r(i); c=reshape(c,[r(i),n(i),numel(c)/m]);
     c=permute(c,[2 1 3]);
     c=reshape(c,[m,numel(c)/m]);
@@ -178,13 +178,13 @@ for i=1:d-1
     v=v*diag(s); c=v';
     %pos=pos+r(i)*n(i)*r(i+1);
 end
-%%==================¡¾end  modification¡¿================================
+%%==================ã€end  modificationã€‘================================
 c=reshape(c,[r(d),n(d),1]);
 c=permute(c,[3,2,1]);
 core=[c(:);core];
 r=r(end:-1:1);n=n(end:-1:1);
 ps=cumsum([1;n.*r(1:d).*r(2:d+1)]);
-tto=struct; % ¼ÇÂ¼ QTT¸ñÊ½
+tto=struct; % è®°å½• QTTæ ¼å¼
 tto.d=d;
 tto.n=n;
 tto.r=r;
@@ -203,7 +203,7 @@ end
 
 
 function [r] = my_chop2(sv,eps)
-% À´Ô´ÓÚTT-toolbox
+% æ¥æºäºTT-toolbox
 
 if (norm(sv)==0)
     r = 1;
