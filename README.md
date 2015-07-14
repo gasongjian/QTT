@@ -2,7 +2,7 @@
 
 
 
----
+-----
 
  - **QTT分解介绍**
 
@@ -10,20 +10,13 @@
 
 **定义：**给定一个多维数组(向量、矩阵或者三维数组等)A，如果其有如下表示，则称之为A的QTT分解
 
-$$
-
-A=U_1 \bowtie U_2 \bowtie \cdots \bowtie U_d
-
-$$
-
-
-![](http://latex.codecogs.com/gif.latex?A=U_1 \\bowtie U_2 \\bowtie \\cdots \\bowtie U_d)
-
+   ![](http://latex.codecogs.com/gif.latex?\\qquad A=U_1 \\bowtie U_2 \\bowtie \\cdots \\bowtie U_d)
 
 - **工具箱介绍**
 
 暂时只提供基本的qtt分解函数，使用方法为：
 
 ```MATLAB
-    t=qtt(A,2,1e-14,'sym')
+    t=qtt(A,2,1e-14,'sym');
+	core=t.core;
 ```
