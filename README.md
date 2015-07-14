@@ -16,7 +16,9 @@ A=U_1 \bowtie U_2 \bowtie \cdots \bowtie U_d
 
 $$
 
-![](http://latex.codecogs.com/gif.latex?A=U_1 \bowtie U_2 \bowtie \cdots \bowtie U_d)
+
+![](http://latex.codecogs.com/gif.latex?A=U_1 \\bowtie U_2 \\bowtie \\cdots \\bowtie U_d)
+
 
 - **工具箱介绍**
 
