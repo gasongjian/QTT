@@ -1,4 +1,16 @@
 function lt1=ltfun(lt,func,newscale)
+%LTFUN  apply func to every subtensor, see also cellfun
+%
+%  Example:
+%    lt1=ltfun(lt,@(x)sum(x(:)),1);
+%    
+%
+
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
+
 r=lt.size;
 scale=lt.scale;scale=scale(:);
 l=numel(scale);

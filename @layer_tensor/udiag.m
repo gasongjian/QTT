@@ -1,4 +1,21 @@
 function lt1=udiag(lt)
+%UDIAG  inner layer diag operation of lt 
+%
+%  LT1=UDIAG(LT)  LT1(i,j)=diag(LT1(i,j))
+%
+%  Example:
+%    lt=layer_tensor(rand(2,4,4,5));
+%    lt1=udiag(lt);
+%    
+%
+%  see also layer_tensor, 
+
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
+
+
 r=lt.size;
 scale=lt.scale;scale=scale(:);
 l=numel(scale);

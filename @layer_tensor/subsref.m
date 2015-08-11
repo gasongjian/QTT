@@ -1,14 +1,27 @@
 function [elem]=subsref(lt,s)
-% FUNCTION　[elem]=SUBSREF(lt,s)
-% 分层张量元素索引
-%   lt(i,j)返回的是第i行第j列的子张量,支持lt(1:2,:)这类索引
-%   (前者返回一个子张量，后者返回一个子分层张量)
-%   lt{i1,i2,i3,...}返回的是一个矩阵，取子张量在上述位置的元素
+%SUBSREF subs reference of lt
 % 
-% 由于MATLAB某些方面的限制，上面的()和{}不能调换
+%  ---------------------
+%  Arribute subsref:
+%    lt.scale;
+%    lt.dat;
+%    lt.size
+%  ---------------------
+%  subtensor reference: 
+%    A=lt(i,j); 
+%    A=lt(1:2,:);
+%    A=lt(:);
+%  ---------------------
+%  element reference:
+%    A=lt{i1,i2,i3,...};
 %
-% @J.Song @2015.07.20 @1.0
+%
+%  see also layer_tensor, subsasgn
 
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
 
 
 r=lt.size;

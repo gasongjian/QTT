@@ -1,6 +1,21 @@
 function B=outer(varargin)
+%OUTER  outer product of two or more tensor
+%  B=outer(A1,A2[,AN]);
+%
+%  Example:
+%    a=rand(10,1);
+%    b=rand(20,1);
+%    c=rand(5,6);
+%    B1=outer(a,b);
+%    isequal(B1,a*b');
+%    B2=outer(a,b,c);
+%
+%  see alse nkron,gtimes
 
-
+%  JSong,3-Aug-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com
 
 
 %%

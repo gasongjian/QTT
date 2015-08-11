@@ -1,6 +1,33 @@
 function B=gtimes(A1,A2,type)
+%GTIMES  general times of two tensor
+%  B=gtimes(A1,A2,type)
+%  A1;n1*n2*...*nd1
+%  A2:m1*m2*...*md2
+%  type: times matrix
+%      |a1,a2,...,ad|
+%      |b1,b2,...,bd|
+%
+%  Example:
+%    A1=rand(3,4);
+%    A2=rand(4,5);
+%    A3=rand(4,5,6);
+%    B1=gtimes(A1,A2,[2;1]);
+%    isequal(B1,A1*A2)
+%    B2=gtimes(A2,A3,[1,2;1,2]);
+%
+%  see also nkron,outer
 
-if isequal(type,[2;1])&&ismatrix(A1)&& ismatrix(A2) && size(A1,2)==size(A2,1)
+
+%  JSong,3-Aug-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com
+
+
+
+
+
+if isequal(type,[2;1])&&ismatrix(A1)&& ismatrix(A2)
     B=A1*A2;
     return
 end

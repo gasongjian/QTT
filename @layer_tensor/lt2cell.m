@@ -1,4 +1,13 @@
 function lt=lt2cell(lt)
+% LT2CELL  convert lt into cell array
+%  return lt,it satisfied: lt{i,j}=lt(i,j)
+%
+%
+
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
 
 r=lt.size;
 scale=lt.scale;scale=scale(:);

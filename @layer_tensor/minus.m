@@ -1,8 +1,18 @@
 function lt=minus(lt,lt1)
-% FUNCTION lt=MINUS(lt1,lt2,[,lt3,..,ltN])
-% 分层张量的减法?lt1-lt2
+%MINUS  MINUS of lt and lt1.
 %
-% @J.Song @2015.07.20 @1.0
+%  Example:
+%    lt1=layer_tensor(rand(2,3,4,5));
+%    lt2=layer_tensor(rand(2,3,4,5));
+%    lt=lt1-lt2;
+%
+%  see also layer_tensor, plus
+
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
+
 if isequal(lt.size,lt1.size)&&isequal(lt.scale,lt1.scale)
     lt.dat=lt.dat-lt1.dat;
 else

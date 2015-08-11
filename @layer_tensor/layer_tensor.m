@@ -1,16 +1,36 @@
  function lt=layer_tensor(varargin)
-% 自定义类：分层张量
-% 存储方式：将分层张量当成一个大的张量来存储，比如2*5自张量大小为3*4的分层张量，我们就把它当成2*3*4*5的张量.
-% 内在属性:
-%          .size  例如上例中的[2;5]
-%          .scale 例如上例中的[3;4] 
-%          .dat   列向量,大张量按列存储而得
+%Layer_tensor  constructor
 %
-% 现已支持分层kronecker积，加减法，()和{}索引,udiag,',u转置，分层外积，广义积等
+%  layer_tensor have three inner attributes, and it is stored as a vector with
+%  size and scale. It can be regarded as multi-dimensional array of [size(1),
+%  scale',size(2)]; For example, a layer_tensor A, A.size=[2;5],A.scale=[3;4],
+%  then A can be regarded as a  tensor of 2*3*4*5.
+%       .size  see [2;5]
+%       .scale  see [3;4]
+%       .dat    see A(:)
+%
+% ------------------------------------------------------------------------
+%  LT=LAYER_TENSOR(ARRAY) Converts from multi-dimensional array,
+%  ndims(array)>2;
+%
+%  LT=LAYER_TENSOR(MATRIX)  Converts from matrix, the size of lt is [1;1].
+%
+%  LT=LAYER_TENSOR(VECTOR,SIZE,SCALE)  Convert form vector, lt.size=size
+%  lt.scale=scale;lt.dat=vector.
+%
+%  LT=LAYER_TENSOR(CELL_ARRAY)  the size of CELL_ARRAY is equal to lt.size,
+%  the size of CELL_ARRAY{i} is equal to lt.scale.
+%
+% ------------------------------------------------------------------------
+%  Now layer_tensor class have support many operations: plus,minus,
+%  layer Kronecker product,layer outer product,layer general
+%  times,subsref,subsasgn,udiag,transpose,ltcun etc.
 %
 %
-%      @J.Song @2015.07.20 @1.0
-%
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com
 
 %% from empty input
 if (nargin == 0)
@@ -75,16 +95,6 @@ if (nargin==3)&&(isvector(varargin{1}))&&(length(varargin{2})==2)
     return
 end
 
-%% from a qtt format(not recommended)
-if (nargin==1)&&(isa(varargin{1},'struct'))    
-    t0=varargin{1};  
-    d=t0.d;ps=t0.ps;r=t0.r;scale=t0.scale;
-    lt=cell(d,1);
-    for i=1:d
-        lt{i}=layer_tensor(t0.core(ps(i):ps(i+1)-1),r(i:i+1),scale(i,:));        
-    end
-    return
-end
 
 
 %% from a cell

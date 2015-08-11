@@ -1,9 +1,9 @@
 function lt=lktimes(lt1,lt2,type)
-%  the general product of layer_tensor
+%LKTIMES  layer general product of layer_tensor
 %   outer layer use kronecker produce
 %   inner layer produce use general product
-%  example:
 %
+%  Example:
 %       a=layer_tensor(floor(10*rand(2,2,2,2)));
 %       b=layer_tensor(floor(10*rand(2,2,2,2)));
 %       c=layer_tensor(floor(10*rand(2,2,2,2)));
@@ -12,8 +12,12 @@ function lt=lktimes(lt1,lt2,type)
 %       e2=lkron(lktimes(a,c,[2;1]),lktimes(b,d,[2;1]));
 %       isequal(e1,e2)
 %
-%
-%
+%  see also lkron
+
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
 
 r1=lt1.size;s1=lt1.scale;s1=s1(:);lt1=lt1.dat;
 r2=lt2.size;s2=lt2.scale;s2=s2(:);lt2=lt2.dat;

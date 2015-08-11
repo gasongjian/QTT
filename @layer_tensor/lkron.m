@@ -1,40 +1,51 @@
 function lt=lkron(varargin)
-% FUNCTION　lt=LKRON(lt1,lt2,[,lt3,..,ltN])
-% 分层张量的分层kronecker 乘法,即\bowtie 运算
-% 牵涉比较复杂的置换，具体操作方式可参见论文
-%
-%
-%      @J.Song @2015.07.20 @1.0
+%LTKRON  layer Kronecker operation of N layer_tensor.
 %  
+%
+%  lkron(lt1,lt2[,ltN]);
+%  lt1 and ltN are layer_tensor. 
+%
+%
+%  Example:
+%    lt1=layer_tensor(rand(2,3,4,5));
+%    lt2=layer_tensor(rand(5,4,3,2));
+%    lt=lkron(lt1,lt2);
+%    lt.size
+%    lt.scale
+%
+%  see also layer_tensor, louter
+
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
 
 
-%% one argument
+%% one layer_tensor
 if (nargin==1)&&isa(varargin{1},'layer_tensor')
     lt=varargin{1};
     return
 end
 
 
-%%  normal 
+%%  two layer_tensors
 if nargin==2
     lt1=varargin{1};
     lt2=varargin{2};
     l=length(lt1.scale);
     r1=lt1.size; c1=lt1.dat; s1=lt1.scale;clear lt1
-    r2=lt2.size; c2=lt2.dat; s2=lt2.scale;clear lt2
-    c1=reshape(c1,[r1(1),prod(s1),r1(2)]);
-    c1=permute(c1,[2,1,3]);
+    r2=lt2.size; c2=lt2.dat; s2=lt2.scale;clear lt2   
     c1=reshape(c1,[numel(c1)/r1(2),r1(2)]);
     c2=reshape(c2,[r1(2),numel(c2)/r1(2)]);
     c=c1*c2;
+    c=reshape(c,[r1(1),s1',s2',r2(2)]);
     
-    c=reshape(c,[s1',r1(1),s2',r2(2)]);
     if l>1
-        index=[l+2:2*l+1;1:l];
-        index=[l+1;index(:);2*l+2];
-        c=permute(c,index);
+        index=[l+2:2*l+1;2:l+1];
+        index=[1;index(:);2*l+2];
+        c=permute(c,index');
     else
-        c=permute(c,[2,3,1,4]);
+        c=permute(c,[1,3,2,4]);
     end
     lt=layer_tensor;
     lt.dat=c(:);
@@ -46,7 +57,7 @@ end
 
 
 
-
+%% more than two layer_tensors
 if (nargin>2)
     d=nargin;
     lt=varargin{1};

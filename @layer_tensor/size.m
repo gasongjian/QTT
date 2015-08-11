@@ -1,11 +1,15 @@
 function d=size(lt,pos)
-% FUNCTION d=size(lt[,pos])
-% size(lt)=lt.size;
-% size(lt,'i')=lt.scale;
-% 
+%SIZE  get the size or scale of lt
 %
-%  @J.Song @2015.07.20 @1.0
+% size(lt):=lt.size;
+% size(lt,'i'):=lt.scale;
+%
+%  see also layer_tensor,
 
+%  JSong,20-Jul-2015
+%  Last Revision: 11-Aug-2015.
+%  Github:http://github.com/gasongjian/QTT/
+%  gasongjian@126.com 
 
 if nargin==1
     pos='outer';
