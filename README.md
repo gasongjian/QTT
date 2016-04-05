@@ -1,5 +1,9 @@
 ﻿# QTT-Toolbox  Version 1.0
 
+更新：
+
+2016.04.05 ：大更新，修复了一些小bug，增加了很多QTT函数.
+
 
 
 -----
@@ -38,17 +42,25 @@ citition: *基于量子化张量列(QTT)模型的特征提取*
    - **初始化**
    
    ```MATLAB
-      A=rand(2,3,4,5);%一个大小为2*5，子模数为3*4的分层张量
-      lt=layer_tensor(A);
+      A=rand(2,3,4,5);%一个大小为2*5，子模数为3*4的分层张量                           
+      lt=layer_tensor(A); % 或者
 	  lt=layer_tensor(A(:),[2;5],[3;4]); %给定大小和子模数
+      % 方法二： 
+      A=cell(2,5);
+      for i=1:2
+          for j=1:5
+              A{i,j}=zeros(3,4);
+          end
+      end
+      lt=layer_tensor(A);
    ```
    
    - **元素引用和赋值**
-     用圆括号引用子张量, 用大括号引用元素(见论文).
+     用圆括号引用子张量, 用大括号引用元素矩阵(见论文).
    
    ```MATLAB
-      r=lt.size;
-      scale=lt.scale;
+      r=lt.size; %分层张量的大小
+      subsize=lt.subsize; %分层张量的子模数
       A=lt(1,2);
 	  A=lt(1:2,5);
 	  A=lt{3,4};
@@ -95,25 +107,45 @@ citition: *基于量子化张量列(QTT)模型的特征提取*
      >* `lt2cell`：  将分层张量转化为2*5的cell, 每一个cell内都是一个子张量
 	 >* `ltfun` ：   类似于cellfun,非常实用的函数。 矩阵情形中ltfun(lt,@(x)x',[4;3])等价于utranspose
      >* `minus`,`plus`： 加法和减法
+     >* `ltqr`： 分层张量的QR分解，[ltr,ltq]=ltqr(lt);使得ltq是一个右正交的分层张量.
+     >* `ltextend`:适用于分层张量的延拓函数
+     
 
    =============================================
  2.**QTT分解**
 
-   张量的基本运算：
+   张量的基本运算（见文件夹Tensor）：
    >* `nkron`: 张量的Kronecker乘法，要求两个张量的维数相同
    >* `outer`：张量的外积
    >* `gtimes`:张量的广义乘法
    
    QTT分解函数：
-     >* `qtt`：适用于多维数组的QTT分解
-	 >* `gqtt`： 适用于任意分层张量的QTT分解，同时也支持多维数组.采用方法：循环
+	 >* `lqtt`： 适用于任意分层张量的QTT分解，同时也支持多维数组.采用方法：分治策略
+   
+   QTT 还原函数：
+   >* `full_qtt`:将一组QTT核还原成一个分层张量，配合double可以还原成多维数组.
+   
+   QTT round 函数：
+   >* `round_qtt`:将一组不满足右正交化得QTT核 右正交化，且使得QTT秩变小.
+   
+   QTT 相关运算函数：
+   >* `plus_qtt`:两组QTT核的加法.
+   >* `gtimes_qtt`:两组QTT核的广义乘法
+   >* `hadamard_qtt`:两组QTT核的点乘
+   
+   工具箱转化函数：
+   
+   TT-Toolbox 的两个类终于可以相互转化成本工具箱的QTT啦
+   >* `qtt2tt`:
+   >* `tt2qtt`:
+
    
    其他函数：
-   >* `qtt2ltcore`:将qtt返回的结构体转化成gqtt函数的输出格式
-   >* `ltsplit`:获取QTT分解的QTT分量
-   >* `clkron`: 适用于元胞的lkron函数，可用于QTT格式的还原
-   >* `ltextend`:适用于分层张量的延拓函数
-   >* `demo_feature_detection` :一个简单的例子
+   >* `info_qtt`:获取QTT分解的相关信息，如QTT秩，等效秩erank，元素个数等.
+   >* `split_qtt`:获取QTT分解的QTT分量
+   >* `rand_qtt`: 根据给定的子模数subsizes和QTT秩，生成一组随机的QTT核
+   >* `toeplitz_qtt`:生成QTT格式的Toeplitz矩阵
+   >* `hankel_qtt` :生成QTT格式的Hankel张量
    
    
    
@@ -121,11 +153,11 @@ citition: *基于量子化张量列(QTT)模型的特征提取*
    使用方法：
   ```MATLAB
      x=rand(6^5,1);y=2*x+rand(6^5,1)*0.1;
-     A=[x';y'];
-     A=layer_tensor(A(:),[2;1],[6^5]);
-     ltcore=gqtt(A,[6;6;6;6;6],1e-4,'sym');
+     A={x;y};
+     A=layer_tensor(A);
+     ltcore=lqtt(A,ones(5,1)*6,1e-4);
      
-     A1=clkron(ltcore);
+     A1=full_qtt(ltcore);
      X=ltsplit(clkron(ltcore(1:3)),clkron(ltcore(4:5)),'kron');
   ```
  
