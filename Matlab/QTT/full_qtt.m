@@ -19,3 +19,11 @@ d=length(ltcore);
 for i=2:d
     A=lkron(A,ltcore{i});
 end
+
+if sum(size(A))==2
+    A=A(1,1);
+end
+
+
+
+

@@ -1,8 +1,8 @@
-function y=hankel_qtt(X,L,varargin)
+function y=hankel_qtt(X,L,epss1,epss2)
 % Hankel 张量的快速QTT分解,可用于构造任意L阶Hankel张量和k重Hankel张量.
 % 参数X是一个张量,张量的阶数决定了构造的重数,参数L时构造的Hankel的阶数.
 % 因为程序里有X的QTT分解和构造后的round_qtt,所以函数可以自定义提供两截断参数
-%                 y=hankel_qtt(X,L,[epss1;epss2]);
+%                 y=hankel_qtt(X,L,epss1,epss2);
 % 而且epss1 用于X的QTT分解，epss2用于round_qtt，缺省都是1e-14
 %
 %  >- Hankel 张量构造：
@@ -15,9 +15,9 @@ function y=hankel_qtt(X,L,varargin)
 %     % X里面注意一下填充的问题
 %     X=[[1:32]',[2:33]',[3:34]',[4:35]'];
 %     y=hankel_qtt(X,2);
-%     y1=double(full_qtt(y));
+%     y1=full_qtt(y);
 %
-%  
+%
 %   更多细节请参考论文：
 %  see also toeplitz_qtt
 
@@ -33,10 +33,8 @@ function y=hankel_qtt(X,L,varargin)
 if nargin==2
     epss1=1e-14;
     epss2=1e-14;
-else
-    epss=varargin{1};
-    epss1=epss(1);
-    epss2=epss(2);
+elseif nargin==3
+    epss2=epss1;
 end
 
 %% 生成L阶Hankel张量
@@ -46,7 +44,7 @@ if isvector(X)
     n=length(X)/L;
     d=log2(n);
     [J,T]=hankel_core(L);
-    X=lqtt(X,[L;ones(d,1)*2],epss1); 
+    X=lqtt(X,[L;ones(d,1)*2],epss1);
     types=[L+1;1];
     y=cell(d,1);
     % 这里将前两个核合并了，是因为第一个核的子模数已经退化成1.
@@ -55,11 +53,12 @@ if isvector(X)
         y{i}=lktimes(T,X{i+1},types);
     end
     y{d}=lktimes(T(:,1),X{d+1},types);
-    y=round_qtt(y,epss2); 
+    y=round_qtt(y,epss2);
     return
 end
 
 %% 生成L阶k重Hankel张量(k=2时即块状Hankel矩阵).
+
 s=size(X);s=s(:);s=s(end:-1:1);
 k=length(s);
 n=s./L;
@@ -85,11 +84,11 @@ end
 %从右到左合并部分QTT核.
 ind1=ind(end-1:-1:1);
 for i=1:k
-    ii=ind1(i); 
+    ii=ind1(i);
     y{ii}=lkron(y{ii},y{ii+1});
     y(ii+1)=[];
 end
-y=round_qtt(y,epss2);   
+y=round_qtt(y,epss2);
 end
 
 
@@ -161,19 +160,14 @@ if (L==2)
             end
         end
     end
-elseif (L>2) 
+elseif (L>2)
     y=[];
     for i=1:n
         y1=traverse(L-1,n,k-i);
         m=size(y1,1);
-        if m>0          
-        y=[y;ones(m,1)*i,y1];
+        if m>0
+            y=[y;ones(m,1)*i,y1];
         end
     end
 end
 end
-
-
-
-
-

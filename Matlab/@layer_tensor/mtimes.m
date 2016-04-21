@@ -1,4 +1,5 @@
 function lt=mtimes(lt1,lt2)
+% 除了数乘外，本函数暂时将*重载为强Kronecker积即lkron.
 
    if isa(lt1,'double')&& isa(lt2,'layer_tensor')
        lt=lt2;

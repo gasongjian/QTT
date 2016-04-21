@@ -1,4 +1,4 @@
-function c=gtimes_qtt(c1,c2,types,varargin)
+function c1=gtimes_qtt(c1,c2,types,varargin)
 %  QTT分解数组的广义乘法,若有
 %           c1=U_1 \bowtie \cdots \bowtie U_d;
 %           c2=V_1 \bowtie \cdots \bowtie V_d;
@@ -28,8 +28,7 @@ else
     epss=varargin{1};
 end
 
-c=cell(d,1);
-for i=1:d
-        c{i}=lktimes(c{i},c2{i},types);
+for i=1:d1
+        c1{i}=lktimes(c1{i},c2{i},types);
 end
-c=round_qtt(c,epss);
+c1=round_qtt(c1,epss);

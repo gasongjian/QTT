@@ -1,12 +1,11 @@
-function [ltcore]=lqtt(lt,subsizes,ltchop,varargin)
-% LQTT::The QTT Decomposition Function of Layer Tensor 
+function [ltcore,arg]=lqtt(lt,subsizes,ltchop)
+%lqtt_old::General QTT decomposition function(see also lqtt_old2)
 %
 %  -----------------------------------------------------------------------
-%  ltcore=lqtt(lt,subsizes,ltchop);
-%  lt: layer_tensor or tensor array
-%  subsizes: subsize matrix, the subsize of all QTT core. Please make sure 
-%          prod(subsizes(:,2))=lt.subsize. 
-%  Otherwise you can use function ltextend.  
+%  [ltcore,arg]=lqtt_old(lt,subsizes,ltchop,extype);
+%  lt: layer_tensor or array
+%  subsizes: subsize matrix, the subsize of all QTT core. If it dose not match
+%  the size of lt,lt will be extended by extype.
 %                ----------------------------
 %                    1      2   ...    l
 %                1   n^1_1  .   ...   n^1_l
@@ -17,117 +16,123 @@ function [ltcore]=lqtt(lt,subsizes,ltchop,varargin)
 %               ----------------------------
 %
 %  ltchop: chop calue.
-%   %If chop by QTT-rank,then  ltchop = r, and length(r)=d+1
-%   If chop by forbenius norm, then ltchop=epss,and ||lt-ltcore||\leq epss*||lt||.
+%   If chop by QTT-rank,then  ltchop = r, and length(r)=d+1
+%   If chop by norm, then ltchop=epss,and ||lt-ltcore||\leq epss*||lt||.
 %
+%  extype: extend method
+%   run ltextend function ,support 'sym' and 'zpd'.
 %
 %  ltcore: cell,ltcore{i}:= the ith QTT core
+%  arg:  record some related parameters
 %  -----------------------------------------------------------------------
-%  Example:    
+%  [ltcore]=lqtt_old(lt,subsizes);
+%   subsizes: layer_tensor,the second QTT core. Meet
+%             lt=lkron(ltcore{1},subsizes).
 %
-%    %ex1:
+%   ltcore: ltcore{2}=subsizes;
+%
+%
+%  -----------------------------------------------------------------------
+%  Example:
 %    x=rand(6^5,1);y=2*x+rand(6^5,1)*0.1;
 %    A=[x';y'];
 %    A=layer_tensor(A(:),[2;1],[6^5]);
-%    %A=layer_tensor({x';y'});
-%    lt=lqtt(A,[6;6;6;6;6],1e-8);
-%    A1=full_qtt(lt);
+%    lt=lqtt_old(A,[6;6;6;6;6],1e-8,'sym');
+%    lt1=lqtt_old(A,lkron(lt{3},lt{4},lt{5}));
 %
-%    %ex2
-%    x=linspace(0,10,1024);x=x';
-%    x=sin(x);
-%    c=lqtt(x,ones(10,1)*2,1e-6);
-%
-%    %ex3
-%    c=zeros(2^10,1);c(1)=2;c(2)=-1;
-%    A=toeplitz(c,c);
-%    B=lqtt(A,ones(10,2)*2,1e-6);
-%    er=info_qtt(B,'erank');
-%
-%  see alse lqtt_old,full_qtt,info_qtt,
+%  see alse lqtt_old2,qtt
 
-%  JSong,15-Mar-2016
-%  Last Revision: 15-Mar-2016.
+%  JSong,3-Aug-2015
+%  Last Revision: 15-Mar-2015.
 %  Github:http://github.com/gasongjian/QTT/
 %  gasongjian@126.com
 
 
-%% In to layer_tensor
+
+
+%% convert to layer_tensor
 if isa(lt,'double')
     if isvector(lt)
-        lt=layer_tensor(lt,[1;1],numel(lt));
+        lt=layer_tensor(lt(:));
     else
-        lt=layer_tensor(lt(:),[1;1],(size(lt))');
+        lt=layer_tensor(lt);
     end
 end
 
+if nargin==2
+    ltchop=1e-14;
+end
 
-%% Get basic info
-r0=lt.size;
-l=numel(lt.subsize);
+%% get basic info
+r0=size(lt);
+l=ndims(lt);
 d=size(subsizes,1);
 
-% record the state of function,'l' represent left node,'r' represent right node
-if nargin==3
-    state=''; 
+%% chop type and chop value
+if (length(ltchop)==1)&&(ltchop<1)
+    chop_type='epss';
+    ltchop=ltchop/sqrt(d-1);
+elseif (length(ltchop)==d+1)
+    chop_type='r';
 else
-    state=varargin{1};
+    error('ltchop');
 end
 
-%% stop condition
-if d==1
-    ltcore{1}=lt;
-    return
-end
+%% 
+ltcore=cell(d,1);
+r=zeros(d+1,1);r(1)=r0(1);r(d+1)=r0(2);
+elems=0;%记录核中元素的总个数
 
-%%  one step decomposition
-
-subsizes1=subsizes(1:round(d/2),:);
-subsizes2=subsizes(round(d/2)+1:end,:);
-ltscale1=[prod(subsizes1,1);prod(subsizes2,1)];
-index=ltscale1([2,1],:);index=(index(:))';
-lt=reshape(lt.dat,[r0(1),index,r0(2)]);
-index=[3:2:2*l+1,1,2:2:2*l+2];
-lt=permute(lt,index);
-lt=reshape(lt,[prod(ltscale1(1,:),2)*r0(1),prod(ltscale1(2,:),2)*r0(2)]);
- % svd
-[lt,s,lt2]=svd(lt,'econ');s=diag(s);
-
-%-----------------------------------------------------------------------
-%r1=my_chop2(s,ltchop*norm(s));
-if isempty(state)
-    ltchop1=ltchop*norm(s)/ceil(log2(d));
-    r1=my_chop2(s,ltchop1);
-    ltchop2=ltchop;
+%% main
+for i=1:d-1
+    r0=size(lt);
+    ltscale1=[prod(subsizes(1:d-i,:),1);subsizes(d-i+1,:)];
+    index=ltscale1([2,1],:);index=(index(:))';
+    lt=reshape(lt.dat,[r(1),index,r(d-i+2)]);
+    index=[3:2:2*l+1,1,2:2:2*l+2];
+    lt=permute(lt,index);
+    lt=reshape(lt,[prod(ltscale1(1,:),2)*r(1),prod(ltscale1(2,:),2)*r(d-i+2)]);
     
-elseif ~ismember('r',state)      
-    r1=my_chop2(s,ltchop);
-    ltchop1=ltchop;
-    ltchop2=ltchop*5/norm(s);
-else
-    % maybe need modification
-    %r1=rank(diag(s));
-    r1=my_chop2(s,ltchop*norm(s));
-    ltchop1=ltchop;
-    ltchop2=ltchop;
+    % svd
+    [lt,s,v]=svd(lt,'econ');
+    s=diag(s);
+    switch chop_type
+        case {'epss'}
+            r1=my_chop2(s,ltchop*norm(s));
+        case {'r'}
+            r1=min(length(s),ltchop(i+1));
+    end
+    r(d-i+1)=r1;
+    v=v(:,1:r1);v=v';
+    elems=elems+numel(v);
+    v=layer_tensor(v(:),[r1;r0(2)],(ltscale1(2,:))');
+    ltcore{d-i+1}=v;
+    
+    
+    s=s(1:r1); lt=lt(:,1:r1)*diag(s);
+    lt=reshape(lt,[prod(ltscale1(1,:),2),r(1),r1]);
+    lt=permute(lt,[2,1,3]);
+    lt=layer_tensor(lt(:),[r0(1);r1],(ltscale1(1,:))');
 end
-%-----------------------------------------------------------------------
-
-
-lt2=lt2(:,1:r1);lt2=lt2';
-lt2=layer_tensor(lt2(:),[r1;r0(2)],(ltscale1(2,:))');
-
-s=s(1:r1); lt=lt(:,1:r1)*diag(s);
-lt=reshape(lt,[prod(ltscale1(1,:),2),r0(1),r1]);
-lt=permute(lt,[2,1,3]);
-lt=layer_tensor(lt(:),[r0(1);r1],(ltscale1(1,:))');
-state1=[state,'l'];
-state2=[state,'r'];
-ltcore=[lqtt(lt,subsizes1,ltchop1,state1);lqtt(lt2,subsizes2,ltchop2,state2)];
+ltcore{1}=lt;
+elems=elems+length(lt.dat);
+if nargout>1
+    s=prod(subsizes,2);
+    a=sum(s(2:d-1));
+    b=s(1)+s(d);
+    erank=(sqrt(b^2+4*a*elems)-b)/2/a;
+    arg=struct;
+    arg.elems=elems;
+    arg.erank=erank;
+    arg.d=d;
+    arg.r=r;
+end
 end
 
 
-%%
+
+
+
 function [r] = my_chop2(sv,eps)
 % from TT-toolbox
 
@@ -150,7 +155,4 @@ else
 end
 return
 end
-
-
-
 

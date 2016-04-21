@@ -1,8 +1,5 @@
-function n=ltnumel(lt)
+function n=ltnumel(lts)
 %numel  get the num or subsize of lt
-%
-% size(lt):=lt.size;
-% size(lt,'i'):=lt.subsize;
 %
 %  see also layer_tensor,
 
@@ -10,7 +7,6 @@ function n=ltnumel(lt)
 %  Last Revision: 11-Aug-2015.
 %  Github:http://github.com/gasongjian/QTT/
 %  gasongjian@126.com 
+dat=lts.dat;
+n=length(dat);
 
-r=lt.size;
-subsize=lt.subsize;
-n=prod(r(:))*prod(subsize(:));

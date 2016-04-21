@@ -1,4 +1,4 @@
-function c=hadamard_qtt(c1,c2,varargin)
+function c1=hadamard_qtt(c1,c2,varargin)
 %  QTT分解数组的Hadamard 积(即点乘),若有
 %           c1=U_1 \bowtie \cdots \bowtie U_d;
 %           c2=V_1 \bowtie \cdots \bowtie V_d;
@@ -23,8 +23,7 @@ if d1~=d2
     error('error::length(c1)~=length(c2).');
 end
 d=d1;
-c=cell(d,1);
 for i=1:d
-        c{i}=lkdtimes(c1{i},c2{i});
+        c1{i}=lkdtimes(c1{i},c2{i});
 end
-c=round_qtt(c,epss);
+c1=round_qtt(c1,epss);

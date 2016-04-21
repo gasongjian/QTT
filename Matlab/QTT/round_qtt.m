@@ -1,7 +1,7 @@
 function c=round_qtt(c,varargin)
 % 
 if nargin==1
-    epss=1e-6;
+    epss=1e-14;
 else
     epss=varargin{1};
 end   
@@ -24,8 +24,4 @@ for i=1:d-1
     c1=lqtt(lkron(c{i},c{i+1}),subsizes,epss);
     c{i}=c1{1};c{i+1}=c1{2};
 end
-
-
-    
-    
 

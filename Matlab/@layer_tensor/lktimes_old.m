@@ -1,4 +1,4 @@
-function lt1=lktimes(lt1,lt2,type)
+function lt=lktimes_old(lt1,lt2,type)
 %LKTIMES  layer general product of layer_tensor
 %   outer layer use kronecker produce
 %   inner layer produce use general product
@@ -19,8 +19,8 @@ function lt1=lktimes(lt1,lt2,type)
 %  Github:http://github.com/gasongjian/QTT/
 %  gasongjian@126.com 
 
-r1=lt1.size;s1=lt1.subsize;lt1=lt1.dat;
-r2=lt2.size;s2=lt2.subsize;lt2=lt2.dat;
+r1=lt1.size;s1=lt1.subsize;s1=s1(:);lt1=lt1.dat;
+r2=lt2.size;s2=lt2.subsize;s2=s2(:);lt2=lt2.dat;
 if (nargin==2)&&(s1(end)==s2(1))
     type=[numel(s1);1];
 end
@@ -31,30 +31,51 @@ if ~isequal(s1(type(1,:)),s2(type(2,:)))
 end
 
 %% get new subsize
-s11=s1;s11(type(1,:))=[];ns1=length(s11);
-s22=s2;s22(type(2,:))=[];ns2=length(s22);
+s11=s1;s11(type(1,:))=[];s22=s2;s22(type(2,:))=[];
 s=[s11;s22];
 if isempty(s),s=1;end
 %% get new size
 r=r1.*r2;
 
-%%
-lt1=reshape(lt1,[r1(1),s1',r1(2)]);
-lt2=reshape(lt2,[r2(1),s2',r2(2)]);
-type=type+1;
-lt1=gtimes(lt1,lt2,type);
-%matlab 最后一维是1是有bug,所以这里要加以区分
-if (r1(2)==1)&&(r2(2)==1)
-    ind=[ns1+2,1,2:ns1+1,ns1+3:ns1+ns2+2];
-elseif (r1(2)==1)&&(r2(2)>1)
-    ind=[ns1+2,1,2:ns1+1,ns1+3:ns1+ns2+2,ns1+ns2+3];
-elseif (r1(2)>1)&&(r2(2)==1)
-    ind=[ns1+3,1,2:ns1+1,ns1+4:ns1+ns2+3,ns1+2];
-else
-    ind=[ns1+3,1,2:ns1+1,ns1+4:ns1+ns2+3,ns1+ns2+4,ns1+2];
+%% 
+lt1=reshape(lt1,[r1(1),prod(s1),r1(2)]);
+lt2=reshape(lt2,[r2(1),prod(s2),r2(2)]);
+
+
+%% 
+dat=zeros(r(1),r(2)*prod(s));
+for i=1:r(1)
+    for j=1:r(2)
+        % ii and jj are kron index dec
+        ii=[floor((i-1)/r2(1))+1,mod((i-1),r2(1))+1];
+        jj=[floor((j-1)/r2(2))+1,mod((j-1),r2(2))+1];
+        
+        % get the subtensor of lt1 and lt2
+        tmp1=lt1(ii(1),:,jj(1));
+        if numel(s1)==1
+            tmp1=tmp1(:);
+        else
+            tmp1=reshape(tmp1,s1');
+        end
+        
+        tmp2=lt2(ii(2),:,jj(2));
+        if numel(s2)==1
+            tmp2=tmp2(:);
+        else
+            tmp2=reshape(tmp2,s2');
+        end
+        % gtimes,storage in matrix as a row vector 
+        tmp=gtimes(tmp1,tmp2,type);
+        tmp=tmp(:);
+        ind=[prod(s)*(j-1)+1:prod(s)*j];
+        dat(i,ind)=tmp';
+    end
 end
-lt1=permute(lt1,ind);
-lt1=layer_tensor(lt1,r,s);
+lt=layer_tensor;
+lt.dat=dat(:);
+lt.size=r;
+lt.subsize=s;
+
 
 end
 

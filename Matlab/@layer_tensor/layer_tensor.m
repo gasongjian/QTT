@@ -35,8 +35,8 @@
 
 %% from empty input
 if (nargin == 0)
-    lt.size = [];
-    lt.subsize=[];
+    lt.size = 0;
+    lt.subsize=0;
     lt.dat=[];
     lt = class(lt,'layer_tensor');
     return;
@@ -45,11 +45,8 @@ end
 
 %% from a layer_tensor
 if (nargin==1)&&(isa(varargin{1},'layer_tensor'))
-    lt=layer_tensor;
-    lt.size=varargin{1}.size;
-    lt.dat=varargin{1}.dat;
-    lt.subsize=varargin{1}.subsize;
-    return    
+    lt=varargin{1};
+    return
 end
 
 %% from a cell
@@ -57,35 +54,23 @@ if (nargin==1)&&(iscell(varargin{1}))
     lt=varargin{1};
     r=size(lt);
     subsize=size(lt{1});
+    subsize=subsize(:);
     dat=cellfun(@(x)(x(:))',lt,'UniformOutput',false);
     dat=cell2mat(dat);
     lt=layer_tensor;
     lt.dat=dat(:);
     lt.size=r(:);
-    lt.subsize=subsize(:);  
+    lt.subsize=subsize(:);
     return
 end
 
-
-
-%% from a multi-dimensional array
-if (nargin==1)&&(~ismatrix(varargin{1}))&&(isa(varargin{1},'double'))
-    A=varargin{1};
-    lt=layer_tensor;
-    s=size(A);
-    r=[s(1);s(end)];
-    lt.size=r;
-    lt.dat=A(:);
-    lt.subsize=s(2:end-1)';
-    return
-end
-
-%% from  matrix
-if (nargin==1)&&(ismatrix(varargin{1}))&&(isa(varargin{1},'double'))
+%% from  array
+if (nargin==1)&&(isa(varargin{1},'double'))
     A=varargin{1};
     lt=layer_tensor;
     if isvector(A)
         subsize=numel(A);
+        A=A(:);
     else
         subsize=size(A);
     end
@@ -97,26 +82,18 @@ end
 
 
 
-
-
-%% from a vector and other parameters
-if (nargin==3)&&(isvector(varargin{1}))&&(length(varargin{2})==2)
+%% from a multi-dimensional array
+if (nargin==3)&&(isa(varargin{1},'double'))&&(length(varargin{2})==2)
     lt=layer_tensor;
     dat=varargin{1};
     r=varargin{2};
     subsize=varargin{3};
+    if numel(dat)~=prod(r(:))*prod(subsize(:))
+        disp('please check the arguments!')
+        return
+    end
     lt.dat=dat(:);
     lt.size=r(:);
     lt.subsize=subsize(:);
     return
 end
-
-
-
-
-
-
-
-
-
-
