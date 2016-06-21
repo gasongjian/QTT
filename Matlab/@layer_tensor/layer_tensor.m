@@ -1,5 +1,6 @@
  function lt=layer_tensor(varargin)
 %Layer_tensor  constructor
+% 。。。。。。
 %
 %  layer_tensor have three inner attributes, and it is stored as a vector with
 %  size and subsize. It can be regarded as multi-dimensional array of [size(1),
