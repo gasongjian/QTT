@@ -53,7 +53,11 @@ end
 if (nargin==1)&&(iscell(varargin{1}))
     lt=varargin{1};
     r=size(lt);
-    subsize=size(lt{1});
+       if isvector(lt{1})
+        subsize=numel(lt{1});
+    else
+        subsize=size(lt{1});
+    end
     subsize=subsize(:);
     dat=cellfun(@(x)(x(:))',lt,'UniformOutput',false);
     dat=cell2mat(dat);
