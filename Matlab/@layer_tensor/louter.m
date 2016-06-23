@@ -48,7 +48,7 @@ if (nargin>2)
     d=nargin;
     lt=varargin{1};
     for i=2:d
-        lt=lkron(lt,varargin{i});
+        lt=louter(lt,varargin{i});
     end
     return
 end
