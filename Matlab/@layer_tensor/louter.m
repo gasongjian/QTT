@@ -38,7 +38,13 @@ if nargin==2
     lt=layer_tensor;
     lt.dat=c(:);
     lt.size=[r1(1);r2(2)];
+    if s1==1
+         lt.subsize=s2;
+    elseif s2==1
+         lt.subsize=s1;
+    else
     lt.subsize=[s1;s2];
+    end
     return
 end
 
