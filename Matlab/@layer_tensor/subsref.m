@@ -84,5 +84,5 @@ switch s(1).type
         strind=sprintf('%d,',pp);
         strind=[':,',strind,':'];
         eval(['elem=lts(',strind,');']);
-        elem=squeeze(elem);
+        elem=reshape(elem,[r(1),r(2)]);
 end
